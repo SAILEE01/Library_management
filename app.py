@@ -1,9 +1,28 @@
+import os
 from flask import Flask, render_template, request
-import xmlrpc.client
 
 app = Flask(__name__)
 
-proxy = xmlrpc.client.ServerProxy("http://localhost:8000/")
+# Library data
+books = {
+    121: {"name": "Harry Potter", "status": "Available"},
+    122: {"name": "The Alchemist", "status": "Issued"},
+    123: {"name": "Wings of Fire", "status": "Available"},
+    124: {"name": "Rich Dad Poor Dad", "status": "Issued"},
+    125: {"name": "The Lord of the Rings", "status": "Issued"},
+    126: {"name": "The Little Prince", "status": "Available"},
+    127: {"name": "Paper Things", "status": "Available"}
+}
+
+def check_book(book_id):
+    try:
+        book_id = int(book_id)
+        if book_id in books:
+            book = books[book_id]
+            return f"Book Name: {book['name']}, Status: {book['status']}"
+        return "Book not available in library"
+    except ValueError:
+        return "Invalid book ID"
 
 @app.route('/')
 def index():
@@ -11,9 +30,10 @@ def index():
 
 @app.route('/check', methods=['POST'])
 def check():
-    book_id = request.form['book']
-    result = proxy.check_book(book_id)
+    book_id = request.form.get('book', '')
+    result = check_book(book_id)
     return render_template('index.html', result=result)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080) 
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
