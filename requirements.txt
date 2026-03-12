@@ -1,5 +1,2 @@
-Flask>=2.3.0
-Flask-Cors>=3.0.10
-python-barcode>=0.15.1
-pydantic>=2.12.5
+Flask
 gunicorn
